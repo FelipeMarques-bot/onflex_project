@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card shadow border-success">
+                <div class="card-body py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 80px;"></i>
+                    </div>
+
+                    <h2 class="text-success mb-3">OS Salva com Sucesso!</h2>
+                    <p class="lead text-muted">Dados registrados.</p>
+
+                    <!-- Botão de Download do PDF -->
+                    {% if os_id %}
+                    <a href="{% url 'baixar_os_pdf' os_id %}" class="btn btn-danger btn-lg w-100 mb-3">
+                        <i class="fas fa-file-pdf"></i> Baixar PDF da OS
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-arrow-left"></i> Voltar ao Início
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

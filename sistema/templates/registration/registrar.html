@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-md-6 mx-auto mt-5">
+    <h3 class="text-center mb-4">Criar Acesso</h3>
+
+    <div class="card p-4 shadow">
+
+        <!-- Alerta Geral no Topo (Só aparece se tiver erro) -->
+        {% if form.errors %}
+            <div class="alert alert-danger text-center">
+                <i class="fas fa-exclamation-circle"></i> Verifique os erros destacados abaixo.
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Loop inteligente para gerar os campos -->
+            {% for field in form %}
+            <div class="mb-3 field-container">
+                <label class="form-label fw-bold">{{ field.label }}</label>
+
+                <!-- Renderiza o campo -->
+                {{ field }}
+
+                <!-- Se este campo específico tiver erro, mostra em vermelho -->
+                {% if field.errors %}
+                    <div class="text-danger small mt-1 fw-bold error-msg">
+                        {% for error in field.errors %}
+                            <i class="fas fa-times"></i> {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Texto de ajuda (se tiver) -->
+                {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button class="btn btn-success w-100 mt-3">Criar Conta</button>
+        </form>
+    </div>
+</div>
+
+<!-- Script para pintar a borda do input de vermelho se tiver erro -->
+<script>
+    // 1. Coloca estilo Bootstrap em todos os inputs
+    var inputs = document.querySelectorAll('input');
+    inputs.forEach(function(input) {
+        input.classList.add('form-control');
+
+        // 2. Verifica se tem mensagem de erro logo abaixo do input
+        var proximoElemento = input.nextElementSibling;
+        if (proximoElemento && proximoElemento.classList.contains('error-msg')) {
+            input.classList.add('is-invalid'); // Isso deixa a borda vermelha
+        }
+    });
+</script>
+{% endblock %}

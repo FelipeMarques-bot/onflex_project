@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnFlex Sistema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --cor-primaria: #FF6600; --cor-secundaria: #FFF3E0; }
+        body { background-color: #f8f9fa; font-family: sans-serif; overflow-x: hidden; }
+
+        /* SIDEBAR BRANCA */
+        #sidebar-wrapper {
+            min-height: 100vh; margin-left: -250px; width: 250px;
+            background-color: white; border-right: 1px solid #ddd;
+            position: fixed; z-index: 1000; transition: margin 0.25s ease-out;
+        }
+        #sidebar-wrapper .sidebar-heading {
+            padding: 1.5rem; font-size: 1.5rem; font-weight: bold;
+            color: var(--cor-primaria); text-align: center; border-bottom: 1px solid #eee;
+        }
+        #sidebar-wrapper .list-group-item { border: none; padding: 15px 20px; color: #333; font-weight: 500; }
+        #sidebar-wrapper .list-group-item:hover { background-color: var(--cor-secundaria); color: var(--cor-primaria); }
+        #sidebar-wrapper .list-group-item.active { background-color: var(--cor-primaria); color: white; }
+
+        #page-content-wrapper { width: 100%; transition: margin 0.25s ease-out; }
+
+        /* CLASSE QUE ABRE O MENU */
+        body.toggled #sidebar-wrapper { margin-left: 0; }
+
+        @media (min-width: 768px) {
+            #sidebar-wrapper { margin-left: 0; }
+            #page-content-wrapper { margin-left: 250px; }
+            body.toggled #sidebar-wrapper { margin-left: -250px; }
+            body.toggled #page-content-wrapper { margin-left: 0; }
+        }
+
+        .top-navbar { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 10px 20px; }
+
+        /* BOTÃO LARANJA */
+        .btn-menu { 
+            background-color: var(--cor-primaria); color: white; border: none; 
+            padding: 10px 15px; border-radius: 5px; font-size: 18px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- MENU LATERAL (Só aparece se logado) -->
+        {% if user.is_authenticated %}
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading">ONFLEX</div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action">Painel</a>
+
+                {% if user.is_staff %}
+                    <a href="{% url 'relatorios' %}" class="list-group-item list-group-item-action">Relatórios</a>
+                    <a href="{% url 'area_gestao' %}" class="list-group-item list-group-item-action">Gestão</a>
+                {% else %}
+                    <a href="{% url 'nova_os' %}" class="list-group-item list-group-item-action">Nova OS</a>
+                    <a href="{% url 'estoque' %}" class="list-group-item list-group-item-action">Estoque</a>
+                    <a href="{% url 'relatorios' %}" class="list-group-item list-group-item-action">Relatórios</a>
+                {% endif %}
+
+                <a href="{% url 'sair' %}" class="list-group-item list-group-item-action text-danger mt-3">Sair</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- CONTEÚDO -->
+        <div id="page-content-wrapper">
+            {% if user.is_authenticated %}
+            <nav class="navbar navbar-expand-lg top-navbar">
+                <!-- O SEGREDO: O comando está direto aqui dentro (onclick) -->
+                <button class="btn-menu" onclick="document.body.classList.toggle('toggled');">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="ms-auto fw-bold text-secondary ps-3">{{ user.username|title }}</span>
+            </nav>
+            {% endif %}
+
+            <div class="container-fluid p-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-info">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

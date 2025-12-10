@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Helvetica, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        h1 { text-align: center; color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Estoque / Uso</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Código</th>
+                <th>Saldo / Uso</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in produtos %}
+            <tr>
+                <td>{{ p.nome }}</td>
+                <td>{{ p.codigo }}</td>
+                <td>{{ p.quantidade_estoque }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

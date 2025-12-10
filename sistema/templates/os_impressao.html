@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page { size: A4; margin: 1cm; }
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #000; }
+        table { width: 100%; border-collapse: collapse; }
+        td { vertical-align: top; padding: 2px; }
+
+        /* Cores da Marca */
+        .bg-orange { background-color: #FF6600; color: white; }
+        .border-orange { border: 1px solid #FF6600; }
+        .text-orange { color: #FF6600; }
+
+        /* Cabeçalho */
+        .company-name { font-size: 14pt; font-weight: bold; color: #FF6600; margin-bottom: 5px; }
+        .header-right { text-align: right; }
+        .os-title { font-size: 14pt; font-weight: bold; color: #FF6600; margin-bottom: 5px; }
+
+        /* Tabelas de Dados */
+        .data-table { width: 100%; border: 1px solid #FF6600; margin-top: 5px; }
+        .data-table th { background-color: #FF6600; color: white; font-size: 8pt; padding: 4px; border: 1px solid #FF6600; text-align: center; font-weight: bold; }
+        .data-table td { padding: 4px; border: 1px solid #FF6600; text-align: center; font-weight: bold; font-size: 10pt; }
+
+        /* Seções */
+        .section-title {
+            background-color: #FF6600;
+            color: white;
+            font-weight: bold;
+            padding: 5px;
+            border: 1px solid #FF6600;
+            margin-top: 15px;
+            font-size: 9pt;
+        }
+        .section-content { border: 1px solid #FF6600; border-top: none; padding: 5px; }
+
+        /* Campos */
+        .field-label { font-size: 8pt; color: #666; display: block; margin-top: 5px; }
+        .field-value { font-size: 10pt; font-weight: bold; }
+
+        /* Assinaturas */
+        .signature-box { margin-top: 40px; text-align: center; }
+        .signature-line { border-top: 1px solid #000; width: 90%; margin: 0 auto; margin-top: 40px; }
+        .footer-text { font-size: 8pt; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <!-- CABEÇALHO -->
+    <table>
+        <tr>
+            <td width="60%">
+                <!-- O SRC AGORA APONTA PARA O CAMINHO ESTÁTICO -->
+                <img src="{% static 'img/logo.png' %}" alt="Logo da Empresa" width="80" height="auto" style="margin-bottom: 30px;">
+
+                <br>
+                <div class="company-name">ONFLEX BR SERVICOS LTDA</div>
+                <div>Fone: (47) 3304-7645</div>
+                <div>Rua Oscar Piske, N°: 725, SALA 01</div>
+                <div>89090330 Timbó, SC</div>
+                <div>CNPJ: 45.309.311/0001-75</div>
+            </td>
+            <td width="40%" class="header-right">
+                <div class="os-title">Ordem de serviço N° {{ os.id }}</div>
+
+                <table class="data-table">
+                    <tr>
+                        <th>Número</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                    </tr>
+                    <tr>
+                        <td>{{ os.id }}</td>
+                        <td>{{ os.data|date:"d/m/Y" }}</td>
+                        <td>{{ os.data|date:"H:i" }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- CLIENTE -->
+    <div class="section-title">Cliente</div>
+    <div class="section-content">
+        <div class="field-value">{{ os.cliente }}</div>
+        <div class="field-label">Endereço não cadastrado</div>
+    </div>
+
+    <!-- DADOS DO SERVIÇO -->
+    <div class="section-title">Dados do Serviço</div>
+    <div class="section-content">
+        <table>
+            <tr>
+                <td width="50%">
+                    <span class="field-label">Equipamento / Veículo</span>
+                    <span class="field-value">KM: {{ os.km_percorrida }}</span>
+                </td>
+                <td width="50%">
+                    <span class="field-label">Técnico</span>
+                    <span class="field-value">{{ os.tecnico.username|upper }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span class="field-label">Problema / Serviço Realizado</span>
+                    <span class="field-value">{{ os.descricao_servico|linebreaksbr }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span class="field-label">Peças Utilizadas</span>
+                    <span class="field-value">{{ os.pecas_usadas|default:"-" }}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- TOTAIS -->
+    <div class="section-title">Totais</div>
+    <div class="section-content">
+        <table style="width: 100%; text-align: right;">
+            <tr>
+                <td style="border:none;">Total serviços: 0,00</td>
+                <td style="border:none;">Total peças: 0,00</td>
+                <td style="border:none;">Total OS: 0,00</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ASSINATURAS -->
+    <table>
+        <tr>
+            <td width="50%" class="signature-box">
+                <div class="footer-text">Concordo com os termos descritos acima.</div>
+                <div class="footer-text">Data: {{ os.data|date:"d/m/Y" }}</div>
+
+                {% if os.assinatura %}
+                    <!-- AGORA USAMOS .url EM VEZ DE .path PARA A ASSINATURA -->
+                    <img src="{{ os.assinatura.url }}" style="max-height: 50px; margin-top: 10px;">
+                {% else %}
+                    <br><br><br>
+                {% endif %}
+
+                <div class="signature-line"></div>
+                <div class="footer-text">Assinatura do Cliente</div>
+            </td>
+            <td width="50%" class="signature-box">
+                <br><br><br><br>
+                <div class="signature-line"></div>
+                <div class="footer-text">Assinatura do Responsável (ONFLEX BR)</div>
+            </td>
+        </tr>
+    </table>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 8pt; color: #999;">
+        Gerado pelo Sistema OnFlex
+    </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-4 col-sm-10 text-center">
+
+        <!-- LOGO (Se não carregar, mostra texto) -->
+        <div class="mb-4">
+            <img src="{% static 'img/logo.png' %}" alt="OnFlex" style="max-width: 200px;" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
+            <h1 id="logo-text" style="display:none; color:#FF6600; font-weight:bold;">ONFLEX</h1>
+        </div>
+
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+                <h4 class="mb-4 fw-bold" style="color: #FF6600;">Login Técnico</h4>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3 text-start">
+                        <label>Usuário</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+                    <div class="mb-4 text-start">
+                        <label>Senha</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">ENTRAR</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Cabeçalho de Boas Vindas -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-light shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="h4 mb-0 text-primary">Olá, {{ user.first_name|default:user.username }}!</h2>
+                        <p class="text-muted mb-0">Painel do Técnico</p>
+                    </div>
+                    <div>
+                        {% if km_aberto %}
+                            <span class="badge bg-warning text-dark p-2"><i class="fas fa-clock"></i> Dia em Aberto</span>
+                        {% else %}
+                            <span class="badge bg-secondary p-2"><i class="fas fa-bed"></i> Dia Fechado</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Principais (Botões) -->
+    <div class="row mb-4">
+        <!-- Card de Controle de KM -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100 shadow-sm border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info"><i class="fas fa-tachometer-alt"></i> Controle de KM</h5>
+
+                    {% if km_aberto %}
+                        <p class="card-text">Você iniciou com <strong>{{ ultimo.km_inicial }} km</strong>.</p>
+                        <button type="button" class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#modalFinalizar">
+                            Finalizar Dia
+                        </button>
+                    {% else %}
+                        <p class="card-text">Último fechamento: <strong>{{ ultimo.km_final|default:"--" }} km</strong>.</p>
+                        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#modalIniciar">
+                            Iniciar Dia
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Estoque -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100 shadow-sm border-danger">
+                <div class="card-body">
+                    <h5 class="card-title text-danger"><i class="fas fa-boxes"></i> Estoque</h5>
+                    <p class="card-text">Baixa de materiais e consulta.</p>
+                    <a href="{% url 'estoque' %}" class="btn btn-danger w-100">Acessar Estoque</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Ordem de Serviço (NOVO) -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100 shadow-sm border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-file-signature"></i> Ordem de Serviço</h5>
+                    <p class="card-text">Nova OS digital com assinatura.</p>
+                    <a href="{% url 'nova_os' %}" class="btn btn-primary w-100">Nova OS</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Histórico Recente -->
+    <div class="card shadow">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0"><i class="fas fa-history"></i> Histórico Recente (KM)</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Início</th>
+                            <th>Fim</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in historico %}
+                        <tr>
+                            <td>{{ item.data|date:"d/m/Y" }}</td>
+                            <td>{{ item.km_inicial }} km</td>
+                            <td>{{ item.km_final|default:"--" }} km</td>
+                            <td>
+                                {% if item.inconsistencia %}
+                                    <span class="badge bg-danger" title="{{ item.mensagem_erro }}">Erro</span>
+                                {% elif item.km_final %}
+                                    <span class="badge bg-success">OK</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Aberto</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3">Nenhum registro encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Iniciar Dia -->
+<div class="modal fade" id="modalIniciar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'registrar_km' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Iniciar Dia de Trabalho</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">KM Atual do Veículo</label>
+                        <!-- Campo vazio para permitir digitação livre (sem travar no anterior) -->
+                        <input type="number" name="km_inicial" class="form-control" required placeholder="Digite o KM do painel">
+                        {% if ultimo.km_final %}
+                        <small class="text-muted">Último fechamento foi: {{ ultimo.km_final }} km</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Confirmar Início</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Finalizar Dia -->
+<div class="modal fade" id="modalFinalizar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'registrar_km' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Finalizar Dia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">KM Final do Veículo</label>
+                        <input type="number" name="km_final" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">Confirmar Fim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

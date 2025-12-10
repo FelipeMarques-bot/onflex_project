@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="alert alert-success shadow">
+        <h4 class="alert-heading"><i class="fas fa-check-circle"></i> Sucesso!</h4>
+        <p>Sua senha foi alterada com sucesso.</p>
+        <hr>
+        <a href="{% url 'area_gestao' %}" class="btn btn-primary">Voltar para Gestão</a>
+    </div>
+</div>
+{% endblock %}

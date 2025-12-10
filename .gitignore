@@ -1,0 +1,22 @@
+    # Ignorar ambientes virtuais
+    nano .gitignore .venv/ env/ venv/ __pycache__/ *.pyc *.sqlite3 db.sqlite3 .DS_Store
+
+    # Ignorar arquivos de mídia (uploads de usuários)
+    nano .gitignore media/ assinaturas_os/
+
+    # Ignorar arquivos de configuração sensíveis
+    *.env
+    .env
+
+    # Ignorar a pasta de arquivos estáticos coletados (se você usa collectstatic)
+    static_collected/
+
+    # Ignorar o arquivo de log de erros do PythonAnywhere
+    *.error.log
+    *.server.log
+
+    # Ignorar a chave secreta do Django (se estiver em um arquivo separado)
+    # Se sua SECRET_KEY estiver diretamente no settings.py, você precisará ter cuidado.
+    # Idealmente, ela deveria vir de uma variável de ambiente ou de um arquivo .env
+    # Se você não tem certeza, por enquanto, não adicione settings.py aqui.
+    # Mas saiba que a SECRET_KEY não deve ser pública.

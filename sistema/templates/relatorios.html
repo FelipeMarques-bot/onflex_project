@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Relatório Geral</h2>
+<div class="card p-3 shadow-sm">
+    <h5>Histórico de KM</h5>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover">
+            <thead><tr><th>Técnico</th><th>Data</th><th>KM Ini</th><th>KM Fim</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for k in kms %}
+                <tr>
+                    <td>{{ k.tecnico.username }}</td>
+                    <td>{{ k.data|date:"d/m/Y" }}</td>
+                    <td>{{ k.km_inicial }}</td>
+                    <td>{{ k.km_final }}</td>
+                    <td>{% if k.inconsistencia %}<span class="text-danger">Erro</span>{% else %}OK{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">Voltar</a>
+{% endblock %}
